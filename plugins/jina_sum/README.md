@@ -11,6 +11,7 @@ config.json 配置说明
 ```bash
 {
   "jina_reader_base": "https://r.jina.ai",           # jina reader链接，默认为https://r.jina.ai
+  "jina_reader_proxy": "",                          # jina reader代理，默认为空，不使用代理
   "open_ai_api_base": "https://api.openai.com/v1",   # chatgpt chat url
   "open_ai_api_key":  "sk-xxx",                      # chatgpt api key
   "open_ai_model": "gpt-3.5-turbo",                  # chatgpt model
