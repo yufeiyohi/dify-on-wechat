@@ -32,6 +32,7 @@ plugins/banwords/lib/__pycache__
 !plugins/linkai
 !plugins/jina_sum
 !plugins/jina_sum/**/
+plugins/ina_sum/config.json
 client_config.json
 # qrcode
 wx_qrcode.png

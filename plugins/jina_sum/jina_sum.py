@@ -41,6 +41,7 @@ class JinaSum(Plugin):
                 self.config = self._load_config_template()
             self.jina_reader_base = self.config.get("jina_reader_base", self.jina_reader_base)
             self.jina_reader_key = os.getenv("jina_reader_key", self.config.get("jina_reader_key", ""))
+            self.jina_reader_proxy = os.getenv("jina_reader_proxy", self.config.get("jina_reader_proxy", ""))
             self.open_ai_api_base = os.getenv("open_ai_api_base", self.config.get("open_ai_api_base", self.open_ai_api_base))
             self.open_ai_api_key = os.getenv("open_ai_api_key", self.config.get("open_ai_api_key", ""))
             self.open_ai_model = self.config.get("open_ai_model", self.open_ai_model)
@@ -114,7 +115,13 @@ class JinaSum(Plugin):
             logger.exception(e)
 
     def _get_jina_url(self, target_url):
-        return self.jina_reader_base + "/" + target_url
+        if self.jina_reader_proxy == "":
+            return self.jina_reader_base + "/" + target_url
+        else:
+            # 在国内使用代理加速访问r.jina.ai
+            simple_jina_reader_base = self.jina_reader_base.replace("https://", "").replace("http://", "")
+            simple_target_url = target_url.replace("https://", "").replace("http://", "")
+            return self.jina_reader_proxy + "/" + simple_jina_reader_base + "/" + simple_target_url
 
     def _get_openai_chat_url(self):
         return self.open_ai_api_base + "/chat/completions"
