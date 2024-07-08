@@ -1,3 +1,3 @@
-FROM hanfangyuan4396/dify-on-wechat:latest
+FROM yufeiyohi/dify-on-wechat:latest
 
 ENTRYPOINT ["/entrypoint.sh"]
