@@ -1,7 +1,7 @@
 version: '2.0'
 services:
   dify-on-wechat:
-    image: hanfangyuan/dify-on-wechat
+    image: yufeiyohi/dify-on-wechat
     container_name: dify-on-wechat
     security_opt:
       - seccomp:unconfined

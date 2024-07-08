@@ -40,8 +40,9 @@ class JinaSum(Plugin):
             if not self.config:
                 self.config = self._load_config_template()
             self.jina_reader_base = self.config.get("jina_reader_base", self.jina_reader_base)
-            self.open_ai_api_base = self.config.get("open_ai_api_base", self.open_ai_api_base)
-            self.open_ai_api_key = self.config.get("open_ai_api_key", "")
+            self.jina_reader_key = os.getenv("jina_reader_key", self.config.get("jina_reader_key", ""))
+            self.open_ai_api_base = os.getenv("open_ai_api_base", self.config.get("open_ai_api_base", self.open_ai_api_base))
+            self.open_ai_api_key = os.getenv("open_ai_api_key", self.config.get("open_ai_api_key", ""))
             self.open_ai_model = self.config.get("open_ai_model", self.open_ai_model)
             self.max_words = self.config.get("max_words", self.max_words)
             self.prompt = self.config.get("prompt", self.prompt)
@@ -71,7 +72,8 @@ class JinaSum(Plugin):
             target_url = html.unescape(content) # 解决公众号卡片链接校验问题，参考 https://github.com/fatwang2/sum4all/commit/b983c49473fc55f13ba2c44e4d8b226db3517c45
             jina_url = self._get_jina_url(target_url)
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}
-            response = requests.get(jina_url, headers=headers, timeout=60)
+            jina_headers = self._get_jina_headers()
+            response = requests.get(jina_url, headers={**jina_headers, **headers}, timeout=120)
             response.raise_for_status()
             target_url_content = response.text
 
@@ -122,6 +124,15 @@ class JinaSum(Plugin):
             'Authorization': f"Bearer {self.open_ai_api_key}",
             'Host': urlparse(self.open_ai_api_base).netloc
         }
+
+    def _get_jina_headers(self):
+        headers = {
+            'X-With-Generated-Alt': 'true',
+            'X-With-Images-Summary': 'true',
+        }
+        if self.jina_reader_key and self.jina_reader_key.startswith('jina_'):
+            headers['Authorization'] = f"Bearer {self.jina_reader_key}"
+        return headers
 
     def _get_openai_payload(self, target_url_content):
         target_url_content = target_url_content[:self.max_words] # 通过字符串长度简单进行截断
